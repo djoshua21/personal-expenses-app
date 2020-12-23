@@ -4,7 +4,12 @@ import './widgets/new_transaction.dart';
 import './widgets/transaction_list.dart';
 import './models/transaction.dart';
 
-void main() => runApp(HomePage());
+void main() {
+  runApp(MaterialApp(
+    home: HomePage(),
+    title: 'My Personal Expenses App',
+  ));
+}
 
 class HomePage extends StatefulWidget {
   @override
@@ -44,52 +49,50 @@ class _HomePageState extends State<HomePage> {
     showModalBottomSheet(
       context: ctx,
       builder: (_) {
-        return NewTransaction(_addNewTransaction);
+        return GestureDetector(
+          child: NewTransaction(_addNewTransaction),
+          onTap: () {},
+          behavior: HitTestBehavior.opaque,
+        );
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Personal Expenses App'),
-          actions: <Widget>[
-            Builder(
-              builder: (context) => IconButton(
-                icon: Icon(Icons.add),
-                onPressed: () => _startAddNewTransaction(context),
-              ),
-            )
-          ],
-        ),
-        body: Container(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  width: double.infinity,
-                  child: Card(
-                    elevation: 5,
-                    child: Text('Chart!'),
-                  ),
-                ),
-                TransactionList(_userTransaction)
-              ],
-            ),
-          ),
-        ),
-        floatingActionButton: Builder(
-          builder: (context) => FloatingActionButton(
-            child: Icon(Icons.add),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Personal Expenses App'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.add),
             onPressed: () => _startAddNewTransaction(context),
+          )
+        ],
+      ),
+      body: Container(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                width: double.infinity,
+                child: Card(
+                  elevation: 5,
+                  child: Text('Chart!'),
+                ),
+              ),
+              TransactionList(_userTransaction)
+            ],
           ),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () => _startAddNewTransaction(context),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
