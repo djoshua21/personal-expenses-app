@@ -37,11 +37,20 @@ class Chart extends StatelessWidget {
     });
   }
 
-  //static const spendLimit = 1000;
+  int maxVal(thing) {
+    var highest = 150;
+    for (var item in thing) {
+      if (item['amount'] > highest) {
+        highest = item['amount'].round();
+      }
+    }
+    return highest;
+  }
 
   @override
   Widget build(BuildContext context) {
-    // print(groupedTransactionValues);
+    final max = maxVal(groupedTransactionValues);
+
     return Container(
       child: Card(
         elevation: 6,
@@ -49,17 +58,11 @@ class Chart extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            ...groupedTransactionValues.map((data) {
-              return Container(
-                margin: EdgeInsets.all(10),
-                child: Column(
-                  children: <Widget>[
-                    Bar(data['amount']),
-                    Text(data['day'])
-                  ],
-                ),
-              );
-            }).toList()
+            ...groupedTransactionValues
+                .map((data) {
+                  return Bar(data['amount'], max, data['day']);
+                }).toList().reversed
+            // this is to reverse the order of the bars so that the most recent is on the left
           ],
         ),
       ),
