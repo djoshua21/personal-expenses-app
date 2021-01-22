@@ -1,11 +1,16 @@
 //import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+
 import './widgets/new_transaction.dart';
 import './widgets/transaction_list.dart';
 import './widgets/chart.dart';
 import './models/transaction.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp,DeviceOrientation.portraitDown]);
   runApp(MaterialApp(
     home: HomePage(),
     theme: ThemeData(
@@ -38,35 +43,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final List<Transaction> _userTransaction = [
-    Transaction(
-      id: 't1',
-      title: 'Take Outs',
-      amount: 89.99,
-      date: DateTime.now(),
-    ),
-    Transaction(
-      id: 't2',
-      title: 'Clothing',
-      amount: 149.99,
-      date: DateTime.now().subtract(Duration(days: 4)),
-    ),Transaction(
-      id: 't3',
-      title: 'Food',
-      amount: 30.0,
-      date: DateTime.now().subtract(Duration(days: 1)),
-    ),Transaction(
-      id: 't4',
-      title: 'Shoes',
-      amount: 99.99,
-      date: DateTime.now().subtract(Duration(days: 2)),
-    ),Transaction(
-      id: 't5',
-      title: 'TV',
-      amount: 200.99,
-      date: DateTime.now().subtract(Duration(days: 3)),
-    ),
-  ];
+  final List<Transaction> _userTransaction = [];
 
   List<Transaction> get _recentTransactions {
     return _userTransaction.where((item) {
@@ -78,11 +55,12 @@ class _HomePageState extends State<HomePage> {
     }).toList();
   }
 
-  void _addNewTransaction(String itemTitle, double itemAmount) {
+  void _addNewTransaction(
+      String itemTitle, double itemAmount, DateTime chosenDate) {
     final newItem = Transaction(
       title: itemTitle,
       amount: itemAmount,
-      date: DateTime.now(),
+      date: chosenDate,
       id: DateTime.now().toString(),
     );
 
@@ -104,30 +82,46 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void _deleteTransaction(String id) {
+    setState(() {
+      _userTransaction.removeWhere((item) => item.id == id);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Personal Expenses App',
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () => _startAddNewTransaction(context),
-          )
-        ],
+    final appBar = AppBar(
+      title: Text(
+        'Personal Expenses App',
       ),
+      actions: <Widget>[
+        IconButton(
+          icon: Icon(Icons.add),
+          onPressed: () => _startAddNewTransaction(context),
+        )
+      ],
+    );
+
+    var screenSize = MediaQuery.of(context).size.height -
+        appBar.preferredSize.height -
+        MediaQuery.of(context).padding.top;
+
+    return Scaffold(
+      appBar: appBar,
       body: Container(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Chart(_recentTransactions),
-              TransactionList(_userTransaction),
-            ],
-          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+                height: screenSize *
+                    0.35,
+                child: Chart(_recentTransactions)),
+            Container(
+                height: screenSize *
+                    0.65,
+                child: TransactionList(_userTransaction, _deleteTransaction)),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(

@@ -38,7 +38,7 @@ class Chart extends StatelessWidget {
   }
 
   int maxVal(thing) {
-    var highest = 150;
+    var highest = 1;
     for (var item in thing) {
       if (item['amount'] > highest) {
         highest = item['amount'].round();
@@ -55,15 +55,24 @@ class Chart extends StatelessWidget {
       child: Card(
         elevation: 6,
         margin: EdgeInsets.all(10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            ...groupedTransactionValues
-                .map((data) {
-                  return Bar(data['amount'], max, data['day']);
-                }).toList().reversed
-            // this is to reverse the order of the bars so that the most recent is on the left
-          ],
+        child: Container(
+          margin: EdgeInsets.symmetric(vertical: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              ...groupedTransactionValues
+                  .map((data) {
+                    return Bar(
+                      data['amount'],
+                      max,
+                      data['day'],
+                    );
+                  })
+                  .toList()
+                  .reversed
+              // this is to reverse the order of the bars so that the most recent is on the left
+            ],
+          ),
         ),
       ),
     );
